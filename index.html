@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王校長的 GPTs </title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 使用 Inter 字體 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #49010a; /* 已從 #5f060d 更改為 #49010a */
+            color: #ffffff; /* 純白色 */
+        }
+
+        /* 項目網格容器 */
+        .container {
+            display: grid;
+            /* 在小螢幕上為2欄，中等螢幕以上為4欄，確保響應性 */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 10px auto; /* 進一步縮小頂部和底部間距 */
+            padding: 24px;
+        }
+
+        /* 單個作品卡片 */
+        .item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 10px;
+            border-radius: 16px;
+            background-color: #5f060d; /* 卡片背景與頁面背景顏色目前不同，維持 #5f060d */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            height: 100%; /* 確保卡片高度一致 */
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 圓形圖片/圖標容器 */
+        .item-image-wrapper {
+            width: 90px; /* 已縮小 */
+            height: 90px; /* 已縮小 */
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 10px; /* 稍微調整邊距 */
+            position: relative;
+            background-color: #4a4a4a; /* 中等深色背景 */
+            border: 4px solid #ffffff; /* 框線顏色改為白色以搭配新的卡片背景 */
+            display: flex; /* 確保佔位符文本居中 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 圖片佔位符文本 */
+        .placeholder-text {
+            color: #ffffff; /* 文字顏色改為白色 */
+            font-size: 0.65em; /* 稍微縮小以適應圓形 */
+            padding: 5px;
+            line-height: 1.2;
+            white-space: pre-wrap;
+        }
+
+        /* 作品標題 */
+        .item-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 5px;
+            color: #ffffff; /* 調整為純白色以適應深色卡片背景 */
+        }
+
+        /* 作品副標題/說明 */
+        .item-description {
+            font-size: 0.85em;
+            color: #ffffff; /* 調整為純白色以適應深色卡片背景 */
+            white-space: pre-wrap;
+            line-height: 1.4;
+            /* 讓文字區塊能有足夠空間 */
+            min-height: 40px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1; /* 讓描述區塊撐滿剩餘空間，確保卡片高度一致 */
+            padding-bottom: 5px;
+        }
+
+        /* 頂部標題 */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            /* 移除分隔線: border-bottom: 1px solid #444444; */
+            margin-bottom: 5px; /* 進一步縮小與下方卡片的間距 */
+        }
+        .header h1 {
+            color: #ffffff; /* 純白色 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="text-4xl font-bold">王校長的工具 </h1> <!-- 已將標題從「王校長的 GPTs」更改為「王校長的工具」 -->
+    </div>
+
+    <div class="container">
+
+        <!-- 輔助函數：生成卡片 (純 JS 實現，以符合單一檔案規範) -->
+        <script>
+            /**
+             * 根據數據生成 HTML 卡片元素。
+             * @param {string} imgAlt 圖片替代文字 (作為佔位符的內容)
+             * @param {string} title 標題
+             * @param {string} description 描述/副標題
+             * @param {string} src 圖片 URL (佔位符)
+             * @param {string} link 點擊後開啟的連結
+             */
+            function createItemCard(imgAlt, title, description, src, link) {
+                // 將描述中的換行符轉換為 HTML 換行標籤
+                const safeDescription = description.replace(/\n/g, '<br>');
+                
+                // 根據是否有連結來決定點擊事件
+                // 如果 link 為空字串，則執行 console.log 動作
+                const clickAction = link 
+                    ? `window.open('${link}', '_blank');` 
+                    : `console.log('你點擊了：${title}');`; // 替換為 console.log 或自訂訊息框
+
+                // 使用 onerror 實現圖片載入失敗時，顯示 imgAlt 文字作為佔位符
+                return `
+                <div class="item-card" onclick="${clickAction}">
+                    <div class="item-image-wrapper">
+                        <!-- 圖片載入失敗時，隱藏圖片並顯示 imgAlt 文字 -->
+                        <img src="${src}" alt="${imgAlt}" class="item-image" onerror="this.style.display='none'; this.closest('.item-image-wrapper').innerHTML='<div class=\\'placeholder-text\\'>${imgAlt.replace(/'/g, '\\\'')}</div>'">
+                    </div>
+                    <div class="item-title">${title}</div>
+                    <div class="item-description">${safeDescription}</div>
+                </div>
+                `;
+            }
+
+            // 根據您的 PDF 內容組織的數據陣列
+            // 已更新所有卡片的描述文字為 "描述001" 到 "描述024"
+            const items = [
+                // 翻譯與語言類
+                { img: "女性頭像 1", title: "ImageBam", desc: "Image Hosting ", link: "https://www.imagebam.com/" }, 
+                { img: "女性頭像 2", title: "EZPage", desc: "上傳HTML到GitHub", link: "https://gg90052.github.io/ezpage/" }, // EZPage 卡片的連結已更新
+                { img: "男性頭像 1", title: "GPT-Prompts", desc: "GPT回應指令指南", link: "https://wangkejing2007.github.io/ChatGPT-Prompts/" }, // 卡片 003 已更新標題、描述和連結
+                
+                // 虛擬人物與文化類
+                { img: "男性頭像 2 (王校長)", title: "王校長的GPTs", desc: "王校長作品", link: "https://wangkejing2007.github.io/mygpts/" }, // 卡片 004 已更新標題、描述和連結
+                { img: "紅色S形圖標", title: "FetchV HLS影片下載", desc: "瀏覽器擴充", link: "https://chromewebstore.google.com/detail/fetchv-video-downloader-f/nfmmmhanepmpifddlkkmihkalkoekpfd" }, // 卡片 005 已更新標題、描述和連結
+                
+                // 查詢與工具類
+                { img: "台鐵火車圖標", title: "YouTube Dubbing", desc: "一鍵配音擴充", link: "https://chromewebstore.google.com/detail/youtube-dubbing-%E2%80%93-transla/oglffgiaiekgeicdgkdlnlkhliajdlja?hl=zh-TW&utm_source=ext_sidebar" }, // 卡片 006 已更新標題、描述和連結
+                { img: "OpenAI 標誌", title: "AIX智能下載器", desc: "瀏覽器擴充", link: "https://chromewebstore.google.com/detail/aix%E6%99%BA%E8%83%BD%E4%B8%8B%E8%BC%89%E5%99%A8%E5%9C%96%E7%89%87%E8%A6%96%E9%A0%81%E9%9F%B3%E6%A8%82%E6%96%87%E6%AA%94/ibdfeimkglcmdejppabkaidpippniiob?hl=zh-TW&utm_source=ext_sidebar" }, // 卡片 007 已更新標題、描述和連結
+                { img: "漢字「漢」圖標", title: "VEED.IO", desc: "MP4 影片壓縮器", link: "https://www.veed.io/zh-TW/tools/video-compressor/mp4-compressor" }, // 卡片 008 已更新標題、描述和連結
+                
+                // 教育與考試類
+                { img: "計算機圖標", title: "Convertio", desc: "MP4轉OPUS", link: "https://convertio.co/zh/mp4-opus/" }, // 卡片 009 的描述已更新
+                { img: "實驗室圖標", title: "Videotowords", desc: "視訊和音訊轉文字", link: "https://www.videotowords.ai/" }, // 卡片 010 已更新標題、描述和連結
+                { img: "漫畫女性頭像", title: "TransPocket", desc: "Audio to Text", link: "https://transpocket.com/" }, // 卡片 011 已更新標題、描述和連結
+                
+                // 升學與備審資料
+                { img: "臺大醫學系校徽", title: "學術搜尋閱讀器", desc: "瀏覽器擴充", link: "https://chromewebstore.google.com/detail/google-scholar-pdf-reader/dahenjhkoodjbpjheillcadbppiidmhp" }, // 卡片 012 已更新標題、描述和連結
+                { img: "女性頭像 3", title: "Screenity螢幕錄製", desc: "瀏覽器擴充", link: "https://chromewebstore.google.com/detail/screenity-screen-recorder/kbbdabhdfibnancpjfhlkhafgdilcnji" }, // 卡片 013 已更新標題、描述和連結
+                { img: "雙人/雙子座圖標", title: "ShareX", desc: "螢幕截圖APP", link: "https://apps.microsoft.com/detail/9nblggh4z1sp?hl=zh-tw&gl=VN" }, // 卡片 014 已更新標題、描述和連結
+                { img: "書本與星形圖標", title: "015", desc: "描述015", link: "" }, 
+                { img: "兔子與魔術帽圖標", title: "016", desc: "描述016", link: "" }, 
+
+                // 招生簡章類
+                { img: "王豫臺 Logo", title: "017", desc: "描述017", link: "" }, 
+                { img: "戴墨鏡男性頭像", title: "018", desc: "描述018", link: "" }, 
+                
+                // 專業與心理類
+                { img: "畢業帽與醫學圖標", title: "019", desc: "描述019", link: "" }, 
+                { img: "粉紅玫瑰圖標", title: "020", desc: "描述020", link: "" }, 
+                
+                // 新增的卡片
+                { img: "新 GPT 1", title: "021", desc: "描述021", link: "" }, 
+                { img: "新 GPT 2", title: "022", desc: "描述022", link: "" }, 
+                { img: "新 GPT 3", title: "023", desc: "描述023", link: "" }, 
+                { img: "新 GPT 4", title: "024", desc: "描述024", link: '' }, 
+            ];
+
+            const container = document.querySelector('.container');
+            let htmlContent = '';
+            
+            // 定義新的圖片 URL
+            const gptsIconUrl = "https://images4.imagebam.com/92/a2/c4/ME172PX5_o.png"; // 圖標 URL
+
+            items.forEach((item, index) => {
+                // 傳遞 link 參數
+                htmlContent += createItemCard(item.img, item.title, item.desc, gptsIconUrl, item.link);
+            });
+
+            container.innerHTML = htmlContent;
+
+        </script>
+
+    </div>
+
+</body>
+</html>
